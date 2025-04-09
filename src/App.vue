@@ -34,78 +34,77 @@ export default {
     handleKeyDown(event) {
       // Nếu là phím Enter
       if (event.key === 'Enter') {
-        event.preventDefault()
-        this.checkCode()
+        event.preventDefault();
+        this.checkCode();
       }
     },
     startScanner() {
       if (this.scanner) {
-        this.scanner.clear()
+        this.scanner.clear();
       }
 
       this.scanner = new Html5QrcodeScanner(
         "qr-reader",
         { 
           fps: 10,
-          qrbox: {width: 250, height: 250},
+          qrbox: { width: 250, height: 250 },
           aspectRatio: 1.0
         }
-      )
+      );
 
       this.scanner.render((decodedText) => {
-        this.scannedCode = decodedText
-        this.checkCode()
+        this.scannedCode = decodedText;
+        this.checkCode();
       }, (error) => {
-        console.warn(`QR Code scanning failed: ${error}`)
-      })
+        console.warn(`QR Code scanning failed: ${error}`);
+      });
 
-      this.isScanning = true
+      this.isScanning = true;
     },
     stopScanner() {
       if (this.scanner) {
-        this.scanner.clear()
-        this.scanner = null
+        this.scanner.clear();
+        this.scanner = null;
       }
-      this.isScanning = false
+      this.isScanning = false;
     },
     checkCode() {
-      if (!this.scannedCode) return
+      if (!this.scannedCode) return;
 
-      const matched = this.trackedCodes.includes(this.scannedCode)
-      
+      const matched = this.trackedCodes.includes(this.scannedCode);
+
       // Thêm vào lịch sử
       this.scanHistory.unshift({
         code: this.scannedCode,
         timestamp: new Date().toLocaleTimeString(),
         matched
-      })
+      });
 
       // Cập nhật kết quả quét cuối cùng
       this.lastScanResult = {
         matched,
         message: matched ? 'Mã trùng khớp!' : 'Mã không trùng khớp!'
-      }
+      };
 
-      // Nếu trùng khớp, phát âm thanh
-      if (matched) {
-        this.audio.play()
-      }
+      // Phát âm thanh dựa trên kết quả
+      const audio = new Audio(new URL(matched ? './assets/correct.wav' : './assets/wrong.mp3', import.meta.url).href);
+      audio.play();
 
       // Reset input và focus lại
-      this.scannedCode = ''
+      this.scannedCode = '';
       if (!this.isScanning) {
-        this.$refs.scannerInput.focus()
+        this.$refs.scannerInput.focus();
       }
 
       // Xóa thông báo sau 3 giây
       setTimeout(() => {
-        this.lastScanResult = null
-      }, 3000)
+        this.lastScanResult = null;
+      }, 3000);
     },
     addCode() {
       if (this.newCode && !this.trackedCodes.includes(this.newCode)) {
-        this.trackedCodes.push(this.newCode)
-        this.newCode = ''
+        this.trackedCodes.push(this.newCode);
+        this.newCode = '';
       }
     }
   }
