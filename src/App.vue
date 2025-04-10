@@ -86,8 +86,9 @@ export default {
         message: matched ? 'Mã trùng khớp!' : 'Mã không trùng khớp!'
       };
 
+      const url = matched ? 'correct.wav' : 'wrong.mp3';
       // Phát âm thanh dựa trên kết quả
-      const audio = new Audio(new URL(matched ? './assets/correct.wav' : './assets/wrong.mp3', import.meta.url).href);
+      const audio = new Audio(url);
       audio.play();
 
       // Reset input và focus lại
